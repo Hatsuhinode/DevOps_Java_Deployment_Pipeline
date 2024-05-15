@@ -1,0 +1,15 @@
+---
+- name: Install OpenJDK 17 JDK on Ubuntu
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install OpenJDK 17 JDK
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
