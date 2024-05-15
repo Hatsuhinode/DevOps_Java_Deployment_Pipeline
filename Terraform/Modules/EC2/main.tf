@@ -112,5 +112,41 @@ resource "aws_instance" "myEC2instance" {
       Name = var.instanceName
     }
 
-  
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      private_key = file(var.Private_Key_Path)
+      host = self.public_ip
+    }
+
+    provisioner "file" {
+    source = "../../Ansible"
+    destination = "/home/ubuntu/ansiblePlaybooks"
+
+}
+
+provisioner "remote-exec" {
+    inline = [
+        "sudo apt update -y",
+        "sudo apt install ansible -y",
+    ]
+
+}
+
+}
+
+
+resource "aws_ebs_volume" "My-EBS" {
+  availability_zone =  var.myebs_availabilityZone  
+  size = var.my-EBS-size
+
+  tags = {
+    Name = var.my-EBS-name
+  }             
+}
+
+resource "aws_volume_attachment" "EBS-attach" {
+  device_name = var.volume-path-in-instance-file-sys    # Device name to attach the volume to on the instance
+  volume_id   = aws_ebs_volume.My-EBS.id
+  instance_id = aws_instance.myEC2instance.id
 }

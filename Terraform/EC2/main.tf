@@ -14,5 +14,10 @@ module "myEC2instance" {
     ec2Instance_type = var.ec2Instance_type1
     Key_Name = var.Key_Name1 
     Public_Key_Path = var.Public_Key_Path1
+    Private_Key_Path = var.Private_Key_Path1
+    my-EBS-size = var.my-EBS-size1
+    my-EBS-name = var.my-EBS-name1
+    volume-path-in-instance-file-sys = var.volume-path-in-instance-file-sys1
+    myebs_availabilityZone = var.myebs_availabilityZone1
 
 }
