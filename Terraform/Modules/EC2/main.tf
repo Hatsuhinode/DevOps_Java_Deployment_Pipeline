@@ -143,8 +143,8 @@ provisioner "remote-exec" {
 }
 
 provisioner "local-exec" {
-  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Docker.yml'"
-  
+  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml'"
+#  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Docker.yml'"
 }
 
 }
