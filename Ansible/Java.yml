@@ -1,7 +1,8 @@
 ---
 - name: Install OpenJDK 17 JDK on Ubuntu
-  hosts: localhost
+  hosts: all
   become: yes
+  remote_user: ubuntu
 
   tasks:
     - name: Update package cache

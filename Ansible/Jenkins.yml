@@ -1,30 +1,36 @@
----
-
 - name: Jenkins Installation
-  hosts: localhost
+  hosts: all
   become: true
-  become_user: root
+  remote_user: ubuntu
 
   tasks:
-  - name: Download Jenkins GPG(GNU Privacy Guard) key
-    get_url:
-      url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-      dest: /usr/share/keyrings/jenkins-keyring.asc
-    notify:
-      - Add Jenkins Repository
+    - name: Download Jenkins GPG(GNU Privacy Guard) key
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
 
+    - name: Add Jenkins Repository
+      ansible.builtin.apt_repository: 
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      ansible.builtin.apt:
+        name: jenkins
+        state: present
 
   handlers:
-  - name: Add Jenkins Repository
-    ansible.builtin.apt_repository: 
-      repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
-      state: present
+    - name: Add Jenkins Repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+      listen: "Download Jenkins GPG(GNU Privacy Guard) key"
 
-  - name: Update apt cache
-    ansible.builtin.apt:
-      update_cache: yes
-
-  - name: Install Jenkins
-    ansible.builtin.apt: 
-      name: jenkins
-      state: present
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+      listen: "Add Jenkins Repository"
