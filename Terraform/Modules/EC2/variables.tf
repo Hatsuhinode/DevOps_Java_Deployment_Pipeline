@@ -5,13 +5,6 @@ variable "aws_region" {
 }
 
 
-#variable "myvpc_cidr" {
-#    description = "Range of IP addresses for the VPC"
-#    type = string
-#  
-#}
-
-
 variable "myvpc_name" {
     description = "Name of VPC to be created"
     type = string
@@ -19,35 +12,10 @@ variable "myvpc_name" {
 }
 
 
-#variable "mysubnet_cidr" {
-#    description = "Range of IP addresses for the subnet"
-#    type = string  
-#}
-
-
-#variable "mysubnet_availabilityZone" {
-#    description = "Availability zone for creating subnet"
-#    type = string
-#  
-#}
-
-
 variable "mysubnet_name" {
     description = "Name of VPC to be created"
     type = string  
 }
-
-
-#variable "igw_name" {
-#    description = "Name for the internet gateway attached to the VPC"
-#    type = string  
-#}
-
-
-#variable "destination_cidr" {
-#    description = "Destination CIDR block for the route used for directing traffic intended for the internet from within the VPC"
-#    type = string  
-#}
 
 
 variable "ami_type" {
