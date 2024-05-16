@@ -1,61 +1,67 @@
-resource "aws_vpc" "myvpc" {
-    cidr_block = var.myvpc_cidr
+#resource "aws_vpc" "myvpc" {
+#    cidr_block = var.myvpc_cidr
+#
+#    tags = {
+#      Name = var.myvpc_name
+#    }
+#  
+#}
 
-    tags = {
-      Name = var.myvpc_name
-    }
-  
+
+#resource "aws_subnet" "mysubnet" {
+#    vpc_id = aws_vpc.myvpc.id
+#    cidr_block = var.mysubnet_cidr
+#    availability_zone = var.mysubnet_availabilityZone
+#    map_public_ip_on_launch = true
+#
+#    tags = {
+#        Name = var.mysubnet_name
+#    }
+#   
+#  
+#}
+
+
+#resource "aws_internet_gateway" "igw" {
+#    vpc_id = aws_vpc.myvpc.id
+#
+#    tags = {
+#      Name = var.igw_name
+#    }
+#  
+#}
+
+
+#resource "aws_route_table" "r_table" {
+#    vpc_id = aws_vpc.myvpc.id
+#
+#    route {
+#        cidr_block = var.destination_cidr      # Destination CIDR block for the route used for directing traffic intended for the internet from within the VPC
+#        gateway_id = aws_internet_gateway.igw.id    #  ID of the gateway to which the traffic ( from inside the VPC) matching the CIDR block will be routed
+#       
+#    }
+#                                                    
+#}
+
+
+#resource "aws_route_table_association" "r_table_linking" {
+#    subnet_id = aws_subnet.mysubnet.id
+#    route_table_id = aws_route_table.r_table.id
+#  
+#}
+
+
+data "aws_vpc" "myvpc" {
+  tags = {
+    Name = var.myvpc_name
+  }
 }
-
-
-resource "aws_subnet" "mysubnet" {
-    vpc_id = aws_vpc.myvpc.id
-    cidr_block = var.mysubnet_cidr
-    availability_zone = var.mysubnet_availabilityZone
-    map_public_ip_on_launch = true
-
-    tags = {
-        Name = var.mysubnet_name
-    }
-   
-  
-}
-
-
-resource "aws_internet_gateway" "igw" {
-    vpc_id = aws_vpc.myvpc.id
-
-    tags = {
-      Name = var.igw_name
-    }
-  
-}
-
-
-resource "aws_route_table" "r_table" {
-    vpc_id = aws_vpc.myvpc.id
-
-    route {
-        cidr_block = var.destination_cidr      # Destination CIDR block for the route used for directing traffic intended for the internet from within the VPC
-        gateway_id = aws_internet_gateway.igw.id    #  ID of the gateway to which the traffic ( from inside the VPC) matching the CIDR block will be routed
-       
-    }
-                                                    
-}
-
-
-resource "aws_route_table_association" "r_table_linking" {
-    subnet_id = aws_subnet.mysubnet.id
-    route_table_id = aws_route_table.r_table.id
-  
-}
-
 
 resource "aws_security_group" "sg" {
     name = "Allow_HTTP"
     description = "Allow HTTP inbound traffic "
 
-    vpc_id = aws_vpc.myvpc.id
+    vpc_id = data.aws_vpc.myvpc.id
 
     ingress {
         description = "HTTP traffic"
@@ -74,14 +80,14 @@ resource "aws_security_group" "sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
-    ingress {
-        description = "Jenkins Server"
-
-        from_port = 8080  
-        to_port = 8080
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
+#    ingress {
+#        description = "Jenkins Server"
+#
+#        from_port = 8080  
+#        to_port = 8080
+#        protocol = "tcp"
+#        cidr_blocks = ["0.0.0.0/0"]
+#    }
 
     egress {
         description = "Outbound taffic"
@@ -97,24 +103,31 @@ resource "aws_security_group" "sg" {
     }
 
     tags = {
-      Name = "HTTP_sg"
+      Name = "HTTP_sg-Agent"
     }
   
 }
 
 
-resource "aws_key_pair" "KeyValue" {
-    key_name = var.Key_Name
-    public_key = file(var.Public_Key_Path)
-  
+#resource "aws_key_pair" "KeyValue" {
+#    key_name = var.Key_Name
+#    public_key = file(var.Public_Key_Path)
+#  
+#}
+
+data "aws_subnet" "mysubnet" {
+  tags = {
+    Name = var.mysubnet_name
+  }
 }
+
 
 
 resource "aws_instance" "myEC2instance" {
     ami = var.ami_type
     instance_type = var.ec2Instance_type
-    key_name = aws_key_pair.KeyValue.key_name
-    subnet_id = aws_subnet.mysubnet.id
+    key_name = var.Key_Name
+    subnet_id = data.aws_subnet.mysubnet.id
     vpc_security_group_ids = [aws_security_group.sg.id]
 
     tags = {
@@ -137,14 +150,14 @@ resource "aws_instance" "myEC2instance" {
 provisioner "remote-exec" {
     inline = [
         "sudo apt update -y",
-        "sudo apt install ansible -y",
+      #  "sudo apt install ansible -y",
     ]
 
 }
 
 provisioner "local-exec" {
-  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml'"
-#  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Docker.yml'"
+  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Docker.yml'"
+###  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Docker.yml'"
 }
 
 }
