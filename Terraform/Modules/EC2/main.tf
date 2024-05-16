@@ -68,8 +68,17 @@ resource "aws_security_group" "sg" {
     ingress {
         description = "SSH traffic"
 
-        from_port = 22  # # SSH traffic (using TCP protocol) from port 80(Outside VPC) to port 80 (Inside VPC) is allowed
+        from_port = 22   # SSH traffic (using TCP protocol) from port 80(Outside VPC) to port 80 (Inside VPC) is allowed
         to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "Jenkins Server"
+
+        from_port = 8080  
+        to_port = 8080
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -131,6 +140,11 @@ provisioner "remote-exec" {
         "sudo apt install ansible -y",
     ]
 
+}
+
+provisioner "local-exec" {
+  command = "ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Java.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Jenkins.yml' && ansible-playbook -i ${self.public_ip}, --private-key ${var.Private_Key_Path} '../../Ansible/Docker.yml'"
+  
 }
 
 }
