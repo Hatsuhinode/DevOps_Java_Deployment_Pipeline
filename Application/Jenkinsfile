@@ -23,7 +23,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 // Navigate to the application directory
-                dir('Register-app/application') {
+                dir('./Application') {
                     // Run Maven commands
                     sh 'mvn clean package'
                 }
@@ -33,7 +33,7 @@ pipeline {
         stage('Test Application') {
             steps {
                 // Navigate to the application directory
-                dir('Register-app/application') {
+                dir('./Application') {
                     // Run Maven commands
                     sh 'mvn test'
                 }
