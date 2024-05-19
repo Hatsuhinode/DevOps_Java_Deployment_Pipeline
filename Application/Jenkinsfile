@@ -16,23 +16,28 @@ pipeline {
         stage('Checkout from SCM') {
             steps {
                 // Get some code from a GitHub repository
-                git branch: 'main', credentialsId : 'github', url: 'https://github.com/Hatsuhinode/DevOps-01.git'
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/Hatsuhinode/DevOps-01.git'
             }
         }
             
         stage('Build Application') {
             steps {
-                sh 'mvn clean package'
+                // Navigate to the application directory
+                dir('Register-app/application') {
+                    // Run Maven commands
+                    sh 'mvn clean package'
+                }
             }
         }
             
         stage('Test Application') {
             steps {
-                sh 'mvn test'
-
+                // Navigate to the application directory
+                dir('Register-app/application') {
+                    // Run Maven commands
+                    sh 'mvn test'
+                }
             }
-            
         }
     }
 }
-
