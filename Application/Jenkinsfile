@@ -1,0 +1,38 @@
+pipeline {
+    agent { label 'Jenkins-Agent' }
+
+    tools {
+        jdk "Java17"
+        maven "Maven3"
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+            
+        stage('Checkout from SCM') {
+            steps {
+                // Get some code from a GitHub repository
+                git branch: 'main', credentialsId : 'github', url: 'https://github.com/Hatsuhinode/DevOps-01.git'
+            }
+        }
+            
+        stage('Build Application') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+            
+        stage('Test Application') {
+            steps {
+                sh 'mvn test'
+
+            }
+            
+        }
+    }
+}
+
