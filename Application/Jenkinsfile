@@ -22,7 +22,7 @@ pipeline {
             
         stage('Build Application') {
             steps {
-                // Navigate to the application directory
+                // Navigate to the Application directory
                 dir('./Application') {
                     // Run Maven commands
                     sh 'mvn clean package'
@@ -32,10 +32,16 @@ pipeline {
             
         stage('Test Application') {
             steps {
-                // Navigate to the application directory
+                // Navigate to the Application directory
                 dir('./Application') {
                     // Run Maven commands
                     sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    // Publish JUnit test results
+                    junit './Application/webapp/target/surefire-reports/*.xml'
                 }
             }
         }
