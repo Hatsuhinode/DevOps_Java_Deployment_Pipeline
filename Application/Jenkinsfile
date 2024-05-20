@@ -23,7 +23,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 // Navigate to the Application directory
-                dir('./Application') {
+                dir('Application') {
                     // Run Maven commands
                     sh 'mvn clean package'
                 }
@@ -33,17 +33,36 @@ pipeline {
         stage('Test Application') {
             steps {
                 // Navigate to the Application directory
-                dir('./Application') {
+                dir('Application') {
                     // Run Maven commands
                     sh 'mvn test'
                 }
             }
-            post {
-                always {
-                    // Publish JUnit test results
-                    junit '**/target/surefire-reports/*.xml'
+        }
+
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    // Define the path to your project directory
+                    def projectDir = "Application"
+                    
+                    // Use 'dir' block to change to the project directory for execution
+                    dir(projectDir) {
+                        // Inside the project directory, execute the SonarQube analysis
+                        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
+                            sh "mvn sonar:sonar"
+                        }
+                    }
                 }
             }
+        }
+    }
+    
+    
+    post {
+        always {
+            // Publish JUnit test results
+            junit '**/target/surefire-reports/*.xml'
         }
     }
 }
